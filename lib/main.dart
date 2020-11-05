@@ -1,5 +1,5 @@
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
+/*import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';*/
 import 'package:flutter/material.dart';
 
 typedef void OnError(Exception exception);
@@ -16,9 +16,9 @@ class ExampleApp extends StatefulWidget {
 
 class _ExampleAppState extends State<ExampleApp> {
   String localFilePath;
-
+/*
   AudioPlayer advancedPlayer;
-  AudioCache audioCache;
+  AudioCache audioCache;*/
 
   Duration _duration = new Duration();
   Duration _position = new Duration();
@@ -44,7 +44,7 @@ class _ExampleAppState extends State<ExampleApp> {
   }
 
   void initPlayer(){
-    advancedPlayer = new AudioPlayer();
+/*    advancedPlayer = new AudioPlayer();
     audioCache = new AudioCache(fixedPlayer: advancedPlayer);
     advancedPlayer.setReleaseMode(ReleaseMode.LOOP);
 
@@ -54,7 +54,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
     advancedPlayer.positionHandler = (p) => setState(() {
       _position = p;
-    });
+    });*/
   }
 
   Widget _btn(String txt, VoidCallback onPressed) {
@@ -63,16 +63,16 @@ class _ExampleAppState extends State<ExampleApp> {
         child: RaisedButton(child: Text(txt), onPressed: onPressed));
   }
 
-  void seekToSecond(int second){
+/*  void seekToSecond(int second){
     Duration newDuration = Duration(seconds: second);
     advancedPlayer.seek(newDuration);
   }
 
   void changeVolume(double vol){
     advancedPlayer.setVolume(vol);
-  }
+  }*/
 
-  Widget slider() {
+/*  Widget slider() {
     return Slider(
         value: _position.inSeconds.toDouble(),
         min: 0.0,
@@ -83,7 +83,7 @@ class _ExampleAppState extends State<ExampleApp> {
             value = value;
           });
         });
-  }
+  }*/
 
   Widget volumeSlider() {
     return Slider(
@@ -92,7 +92,9 @@ class _ExampleAppState extends State<ExampleApp> {
         max: 1.0,
         onChanged: (double value) {
           setState(() {
+/*
             changeVolume(value);
+*/
             _volume = value;
           });
         });
@@ -101,11 +103,11 @@ class _ExampleAppState extends State<ExampleApp> {
   Widget localAsset() {
     return _tab([
       Text('Play Local Asset \'titanic_flute.mp3\':'),
-      _btn('Play', () => audioCache.play('titanic_flute.mp3')),
+/*      _btn('Play', () => audioCache.play('titanic_flute.mp3')),
       _btn('Pause',() => advancedPlayer.pause()),
       _btn('Stop', () => advancedPlayer.stop()),
       slider(),
-      volumeSlider()
+      volumeSlider()*/
     ]);
   }
 
@@ -120,7 +122,9 @@ class _ExampleAppState extends State<ExampleApp> {
               Tab(text: 'Local Asset'),
             ],
           ),
+/*
           title: Text('audioplayers Example'),
+*/
         ),
         body: TabBarView(
           children: [localAsset()],
