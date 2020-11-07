@@ -9,6 +9,7 @@ class MusicPlayerScreen extends StatefulWidget {
   _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
 }
 
+// The main UI for the Music Player
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       body: Container(
         padding: EdgeInsets.all(20.0),
         color: Colors.white,
-        //background audio player will communicate with the help of streams to the ui
+        // Background audio player will communicate with the help of streams to the ui
         // we are listening to the audioplayers streams
         child: StreamBuilder<AudioState>(
             stream: _audioStateStream,
@@ -44,6 +45,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        // The main media player buttons
                         children: [
                           !playing
                               ? IconButton(
@@ -80,27 +82,28 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     );
  }
 
+ // Starts the main player of the map.. todo probably do this automatically
   _startAudioPlayBtn() {
     return MaterialButton(
       child: Text('Start Audio Player'),
       onPressed: () async {
-        await AudioService.start(backgroundTaskEntrypoint: _audioTaskEntryPoint,
-        androidNotificationChannelName: 'Audio Service Demo',
-        androidNotificationColor:  0xFF2222f5,
-        androidNotificationIcon: 'mipmap/ic_launcher');
+        await AudioService.start(
+            backgroundTaskEntrypoint: _audioTaskEntryPoint,
+            androidNotificationChannelName: 'Audio Service Demo',
+            androidNotificationColor:  0xFF2222f5,
+            androidNotificationIcon: 'mipmap/ic_launcher');
       },
     );
   }
 }
 
-
 void _audioTaskEntryPoint() async{
   AudioServiceBackground.run(()=> AudioPlayerTask());
 }
 
-//used to combine some streams, passed through audistate
+// Used to combine some streams, passed through audiostate
 Stream<AudioState> get _audioStateStream {
-  //Combine 3 streams from audio player, pass through audiostate
+  // Combine 3 streams from audio player, pass through audiostate
   return Rx.combineLatest3<List<MediaItem>, MediaItem, PlaybackState,
       AudioState>(
     AudioService.queueStream,

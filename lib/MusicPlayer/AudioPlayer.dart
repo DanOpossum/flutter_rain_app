@@ -1,9 +1,10 @@
 import 'dart:async';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 
+// These look in the android drawable folder for images
 MediaControl playControl = MediaControl(
+    //from drawable, manually imported pngs
     androidIcon: 'drawable/play',
     label: 'Play',
     action: MediaAction.play,
@@ -29,9 +30,12 @@ MediaControl stopControl = MediaControl(
   action: MediaAction.stop,
 );
 
+// AudioPlayer extends the BackgroundAudioTask
+// It will run in a separate thread/isolate other than the main isolate
 class AudioPlayerTask extends BackgroundAudioTask{
 
-  //the queue of audio media
+  // The queue of audio media (songs mp3s etc)
+  // todo expand on format
   final _queue = <MediaItem>[
     MediaItem(
       id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
@@ -67,6 +71,7 @@ class AudioPlayerTask extends BackgroundAudioTask{
   @override
   void onStart(Map<String, dynamic> params) {
 
+    // Here we are subscribiing to audioplayer stuff
     _playerStateSubscription =
         _audioPlayer.playbackStateStream.where((state) =>state ==
             AudioPlaybackState.completed).listen((state) {_handlePlaybackComplete();});
@@ -93,12 +98,12 @@ class AudioPlayerTask extends BackgroundAudioTask{
         default:
       }
     });
-
     // how we set the queue to the audio service in the background
     AudioServiceBackground.setQueue(_queue);
     onSkipToNext();
-
   }
+
+  // UI should call onPlay, this function is triggered to play audio.
   @override
   void onPlay() {
     if (_audioProcessingState == _audioProcessingState){
@@ -137,14 +142,17 @@ class AudioPlayerTask extends BackgroundAudioTask{
       _setState(processingState: AudioProcessingState.ready);
     }
   }
+
   @override
   void onSkipToNext() async {
     skip(1);
   }
+
   @override
   void onSkipToPrevious() {
     skip(-1);
   }
+
   @override
   Future<void> onStop() async {
     _playing = false;
@@ -158,7 +166,6 @@ class AudioPlayerTask extends BackgroundAudioTask{
   @override
   void onSeekTo(Duration position) {
     _audioPlayer.seek(position);
-
   }
 
   void playPause() {
@@ -172,7 +179,6 @@ class AudioPlayerTask extends BackgroundAudioTask{
   @override
   void onClick(MediaButton button) {
     playPause();
-
   }
 
   //Handles moving the postion based on duration bounds
@@ -195,10 +201,9 @@ class AudioPlayerTask extends BackgroundAudioTask{
   @override
   Future<void> onRewind() async {
     await _seekRelative(rewindInterval);
-
   }
 
-  // make sure there is something in the queue, if not stop
+  // Make sure there is something in the queue, if not stop
   _handlePlaybackComplete(){
     if (hasNext) {
       onSkipToNext();
@@ -224,6 +229,7 @@ class AudioPlayerTask extends BackgroundAudioTask{
         speed: _audioPlayer.speed);
   }
 
+  // Returns the list of mediaControls ie. The play button
   List<MediaControl> getControls(){
     if(_playing){
       return[
@@ -243,8 +249,8 @@ class AudioPlayerTask extends BackgroundAudioTask{
     }
   }
 }
-
-//Helps combines some streams to listen to them
+// Helps combines some streams to listen to them
+// AudioPlayer streams out differnt types of data (listed below) this combines them
 class AudioState {
   final List<MediaItem> queue;
   final MediaItem mediaItem;
