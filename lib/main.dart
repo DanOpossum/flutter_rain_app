@@ -13,8 +13,9 @@ class HomeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // return a widget that maintains a connection to [AudioService]
+      // we will return our custom MusicPlayerScreen
       home: AudioServiceWidget(child: MusicPlayerScreen()),
     );
   }
 }
-
