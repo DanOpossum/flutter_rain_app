@@ -20,9 +20,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       body: Container(
         padding: EdgeInsets.all(20.0),
         color: Colors.white,
+        child: new Column(
+        children:[
+          new Image(image:AssetImage('assets/kitty-8-10.jpg'))
+          ,
         // The background audio player will communicate with the help of streams to the ui
         // we are listening to the audioplayers streams
-        child: StreamBuilder<AudioState>(
+        new StreamBuilder<AudioState>(
           stream: _audioStateStream,
           builder: (context, snapshot) {
             final audioState = snapshot.data;
@@ -82,6 +86,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                 ));
           },
         ),
+        ]
+      ),
       ),
     );
   }
