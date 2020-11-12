@@ -11,6 +11,14 @@ class MusicPlayerScreen extends StatefulWidget {
 
 // The main UI for the Music Player
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
+
+_MusicPlayerScreenState(){
+            // AudioService.start(
+            // backgroundTaskEntrypoint: _audioTaskEntryPoint,
+            // androidNotificationChannelName: 'Audio Service Demo',
+            // androidNotificationColor: 0xFF2222f5,
+            // androidNotificationIcon: 'mipmap/ic_launcher');
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +54,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                   children: [
                     if (processingState == AudioProcessingState.none) ...[
                       _startAudioPlayBtn(),
+
+                      //why wont this work??? tbd
+                      // _soundChoices(),
+                      
                     ] else ...[
                       SizedBox(height: 20),
                       Row(
@@ -105,6 +117,19 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       },
     );
   }
+
+    // Starts the main player of the map.. todo probably do this automatically
+  _soundChoices() {
+return GridView.count(
+  crossAxisCount: 2 ,
+  children: List.generate(50,(index){
+    return Container(
+      child: Card(
+        color: Colors.blue,
+      ),
+    );
+  }),
+);
 }
 
 void _audioTaskEntryPoint() async {
@@ -125,4 +150,5 @@ Stream<AudioState> get _audioStateStream {
       playbackState,
     ),
   );
+}
 }

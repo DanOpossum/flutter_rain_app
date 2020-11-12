@@ -36,40 +36,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   final _mediaLibrary = MediaLibrary();
 
   // The queue of audio media (songs mp3s etc)
-  // todo expand on format
-
   List<MediaItem> get _queue => _mediaLibrary.items;
-
-  // List<MediaItem> get queue => _mediaLibrary.items;
-  // final _queue = <MediaItem>[
-  //   MediaItem(
-  //     id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
-  //     album: "Science Friday",
-  //     title: "A Salute To Head-Scratching Science",
-  //     artist: "Science Friday and WNYC Studios",
-  //     duration: Duration(milliseconds: 5739820),
-  //     artUri:
-  //         "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-  //   ),
-  //   MediaItem(
-  //     id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-  //     album: "Science Friday",
-  //     title: "From Cat Rheology To Operatic Incompetence",
-  //     artist: "Science Friday and WNYC Studios",
-  //     duration: Duration(milliseconds: 2856950),
-  //     artUri:
-  //         "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-  //   ),
-  //   MediaItem(
-  //     id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-  //     album: "x",
-  //     title: "xTitle",
-  //     artist: "xartist",
-  //     duration: Duration(milliseconds: 2856950),
-  //     artUri:
-  //         "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-  //   ),
-  // ];
 
   int _queueIndex = -1;
   AudioPlayer _audioPlayer = AudioPlayer();
@@ -84,7 +51,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onStart(Map<String, dynamic> params) {
-    //todo expand with explanation
+    // todo expand with explanation
     // Here we are setting up our _playerStateSubscription by getting
     // the playbackStateStream from our _audioPlayer.
     _playerStateSubscription = _audioPlayer.playbackStateStream
@@ -152,7 +119,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         ? AudioProcessingState.skippingToNext
         : AudioProcessingState.skippingToPrevious;
     AudioServiceBackground.setMediaItem(mediaItem);
-    await _audioPlayer.setFilePath(mediaItem.id);
+    await _audioPlayer.setAsset(mediaItem.id);
     // await _audioPlayer.setUrl(mediaItem.id); this works for urls not files.
     _audioProcessingState = null;
     if (_playing) {
@@ -273,20 +240,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
 class MediaLibrary {
   final _items = <MediaItem>[
     MediaItem(
-      id: "/assets/titanic_flute.mp3",
-      album: "Science Friday",
-      title: "A Salute To Head-Scratching Science",
-      artist: "Science Friday and WNYC Studios",
-      duration: Duration(milliseconds: 5739820),
-      artUri:
-          "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-    ),
-    MediaItem(
-      id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-      album: "Science Friday",
-      title: "From Cat Rheology To Operatic Incompetence",
-      artist: "Science Friday and WNYC Studios",
-      duration: Duration(milliseconds: 2856950),
+      id: "assets/titanic_flute.mp3",
+      album: "Unspecified Album",
+      title: "Epic Titanic Flute",
+      artist: "Unspecified Artist",
+      duration: Duration(),
       artUri:
           "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
     ),
