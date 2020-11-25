@@ -51,13 +51,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onStart(Map<String, dynamic> params) {
+
     // todo expand with explanation
     // Here we are setting up our _playerStateSubscription by getting
     // the playbackStateStream from our _audioPlayer.
     _playerStateSubscription = _audioPlayer.playbackStateStream
         .where((state) => state == AudioPlaybackState.completed)
-        .listen((state) {
-      _handlePlaybackComplete();
+        .listen((state) {_handlePlaybackComplete();
     });
 
     // Listening for state
@@ -166,6 +166,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
     playPause();
   }
 
+  @override
+   Future<dynamic> onCustomAction(String name, dynamic arguments) async {
+    if (name == "volume")
+      _audioPlayer.setVolume(arguments);
+  }
+
   //Handles moving the postion based on duration bounds
   Future<void> _seekRelative(Duration offset) async {
     var newPosition = _audioPlayer.playbackEvent.position + offset;
@@ -259,6 +265,6 @@ class AudioState {
   final List<MediaItem> queue;
   final MediaItem mediaItem;
   final PlaybackState playbackState;
-
+  // final double audioLevel;
   AudioState(this.queue, this.mediaItem, this.playbackState);
 }

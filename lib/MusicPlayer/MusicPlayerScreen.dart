@@ -11,13 +11,7 @@ class MusicPlayerScreen extends StatefulWidget {
 
 // The main UI for the Music Player
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
-  _MusicPlayerScreenState() {
-    // AudioService.start(
-    // backgroundTaskEntrypoint: _audioTaskEntryPoint,
-    // androidNotificationChannelName: 'Audio Service Demo',
-    // androidNotificationColor: 0xFF2222f5,
-    // androidNotificationIcon: 'mipmap/ic_launcher');
-  }
+  _MusicPlayerScreenState() {}
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +33,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                 final queue = audioState?.queue;
                 final mediaItem = audioState?.mediaItem;
                 final playBackState = audioState?.playbackState;
+                // final volumeState = audioState?.volumeState;
+
                 final processingState =
                     playBackState?.processingState ?? AudioProcessingState.none;
                 final playing = playBackState?.playing ?? false;
+                final double volume = 1;
 
                 return Container(
                     width: MediaQuery.of(context).size.width,
@@ -51,40 +48,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         _soundChoices(),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          // The main media player buttons
-                          children: [
-                            !playing
-                                ? IconButton(
-                                    icon: Icon(Icons.play_arrow),
-                                    iconSize: 64.0,
-                                    onPressed: AudioService.play)
-                                : IconButton(
-                                    icon: Icon(Icons.pause),
-                                    iconSize: 64.0,
-                                    onPressed: AudioService.pause),
-                            IconButton(
-                                icon: Icon(Icons.skip_previous),
-                                iconSize: 64.0,
-                                onPressed: () {
-                                  if (mediaItem == queue.first) {
-                                    return;
-                                  }
-                                  AudioService.skipToPrevious();
-                                }),
-                            IconButton(
-                                icon: Icon(Icons.skip_next),
-                                iconSize: 64.0,
-                                onPressed: () {
-                                  if (mediaItem == queue.last) {
-                                    return;
-                                  }
-                                  AudioService.skipToNext;
-                                }),
-                          ],
-                        )
+                        // SizedBox(height: 20),
+                        _playerController(playing, mediaItem, queue),
+                        _volumeController(volume),
                       ],
                     ));
               },
@@ -100,6 +66,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     return MaterialButton(
       child: Text('Start Audio Player'),
       onPressed: () async {
+
+      
+
         AudioService.start(
             backgroundTaskEntrypoint: _audioTaskEntryPoint,
             androidNotificationChannelName: 'Audio Service Demo',
@@ -151,8 +120,66 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         ],
       ),
     );
+  }
 
+  _playerController(bool playing, MediaItem mediaItem, List<MediaItem> queue) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      // The main media player buttons
+      children: [
+        !playing
+            ? IconButton(
+                icon: Icon(Icons.play_arrow),
+                iconSize: 64.0,
+                onPressed: AudioService.play)
+            : IconButton(
+                icon: Icon(Icons.pause),
+                iconSize: 64.0,
+                onPressed: AudioService.pause),
+        IconButton(
+            icon: Icon(Icons.skip_previous),
+            iconSize: 64.0,
+            onPressed: () {
+              if (mediaItem == queue.first) {
+                return;
+              }
+              AudioService.skipToPrevious();
+            }),
+        IconButton(
+            icon: Icon(Icons.skip_next),
+            iconSize: 64.0,
+            onPressed: () {
+              if (mediaItem == queue.last) {
+                return;
+              }
+              AudioService.skipToNext;
+            }),
+      ],
+    );
+  }
 
+  _volumeController(double _volume) {
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        activeTrackColor: Colors.red[700],
+        inactiveTrackColor: Colors.red[100],
+        trackShape: RectangularSliderTrackShape(),
+        trackHeight: 4.0,
+        thumbColor: Colors.redAccent,
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+        overlayColor: Colors.red.withAlpha(32),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+      ),
+      child: Slider(
+        value: _volume,
+        onChanged: (value) {
+          setState(() {
+            _volume = value;
+            AudioService.customAction("volume",_volume);
+          });
+        },
+      ),
+    );
   }
 }
 
@@ -175,6 +202,10 @@ void _audioTaskEntryPoint() async {
   AudioServiceBackground.run(() => AudioPlayerTask());
 }
 
+void _audioTaskVolume() async {
+  // AudioServiceBackground.setv(() => AudioPlayerTask().setVolume(.1));
+}
+
 // Used to combine some streams, passed through audiostate
 Stream<AudioState> get _audioStateStream {
   // Combine 3 streams from audio player, pass through audiostate
@@ -183,7 +214,8 @@ Stream<AudioState> get _audioStateStream {
     AudioService.queueStream,
     AudioService.currentMediaItemStream,
     AudioService.playbackStateStream,
-    (queue, mediaItem, playbackState) => AudioState(
+
+    (queue, mediaItem, playbackState,) => AudioState(
       queue,
       mediaItem,
       playbackState,
