@@ -11,11 +11,13 @@ class MusicPlayerScreen extends StatefulWidget {
 
 // The main UI for the Music Player
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
-  _MusicPlayerScreenState() {}
+  double volume = 70;
+
+  _MusicPlayerScreenState();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    var aa = Scaffold(
       appBar: AppBar(
         title: Text('Music Player'),
       ),
@@ -33,13 +35,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                 final queue = audioState?.queue;
                 final mediaItem = audioState?.mediaItem;
                 final playBackState = audioState?.playbackState;
-                // final volumeState = audioState?.volumeState;
-
+                final playing = playBackState?.playing ?? false;
+                // Can use this to check if playing
+                // if (processingState == AudioProcessingState.none) ...[
                 final processingState =
                     playBackState?.processingState ?? AudioProcessingState.none;
-                final playing = playBackState?.playing ?? false;
-                final double volume = 1;
-
                 return Container(
                     width: MediaQuery.of(context).size.width,
                     child: Column(
@@ -48,9 +48,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         _soundChoices(),
-                        // SizedBox(height: 20),
+                        _volumeController(),
                         _playerController(playing, mediaItem, queue),
-                        _volumeController(volume),
                       ],
                     ));
               },
@@ -59,16 +58,18 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         ),
       ),
     );
+
+    return aa;
   }
 
   // Starts the main player of the map.. todo probably do this automatically
   _startAudioPlayBtn() {
+    Slider aa = _volumeController();
+    aa.onChanged(volume);
+
     return MaterialButton(
       child: Text('Start Audio Player'),
       onPressed: () async {
-
-      
-
         AudioService.start(
             backgroundTaskEntrypoint: _audioTaskEntryPoint,
             androidNotificationChannelName: 'Audio Service Demo',
@@ -77,9 +78,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       },
     );
   }
-
-  // Can use this to check if playing
-  // if (processingState == AudioProcessingState.none) ...[
 
   _soundChoices() {
     return Container(
@@ -122,6 +120,44 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     );
   }
 
+  _volumeController() {
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        activeTrackColor: Colors.red[700],
+        inactiveTrackColor: Colors.red[100],
+        trackShape: RoundedRectSliderTrackShape(),
+        trackHeight: 4.0,
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+        thumbColor: Colors.redAccent,
+        overlayColor: Colors.red.withAlpha(32),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+        tickMarkShape: RoundSliderTickMarkShape(),
+        activeTickMarkColor: Colors.red[700],
+        inactiveTickMarkColor: Colors.red[100],
+        valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+        valueIndicatorColor: Colors.redAccent,
+        valueIndicatorTextStyle: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      child: Slider(
+        value: volume,
+        min: 0,
+        max: 100,
+        divisions: 10,
+        label: '$volume',
+        onChanged: (value) {
+          setState(
+            () {
+              volume = value;
+              AudioService.customAction("volume", volume);
+            },
+          );
+        },
+      ),
+    );
+  }
+
   _playerController(bool playing, MediaItem mediaItem, List<MediaItem> queue) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -157,30 +193,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       ],
     );
   }
-
-  _volumeController(double _volume) {
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        activeTrackColor: Colors.red[700],
-        inactiveTrackColor: Colors.red[100],
-        trackShape: RectangularSliderTrackShape(),
-        trackHeight: 4.0,
-        thumbColor: Colors.redAccent,
-        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-        overlayColor: Colors.red.withAlpha(32),
-        overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-      ),
-      child: Slider(
-        value: _volume,
-        onChanged: (value) {
-          setState(() {
-            _volume = value;
-            AudioService.customAction("volume",_volume);
-          });
-        },
-      ),
-    );
-  }
 }
 
 class BodyWidget extends StatelessWidget {
@@ -190,6 +202,7 @@ class BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => afterBuild);
     return Container(
       height: 10.0,
       color: color,
@@ -198,12 +211,12 @@ class BodyWidget extends StatelessWidget {
   }
 }
 
-void _audioTaskEntryPoint() async {
-  AudioServiceBackground.run(() => AudioPlayerTask());
+void afterBuild() {
+  // executes after build is done
 }
 
-void _audioTaskVolume() async {
-  // AudioServiceBackground.setv(() => AudioPlayerTask().setVolume(.1));
+void _audioTaskEntryPoint() async {
+  AudioServiceBackground.run(() => AudioPlayerTask());
 }
 
 // Used to combine some streams, passed through audiostate
@@ -214,8 +227,12 @@ Stream<AudioState> get _audioStateStream {
     AudioService.queueStream,
     AudioService.currentMediaItemStream,
     AudioService.playbackStateStream,
-
-    (queue, mediaItem, playbackState,) => AudioState(
+    (
+      queue,
+      mediaItem,
+      playbackState,
+    ) =>
+        AudioState(
       queue,
       mediaItem,
       playbackState,

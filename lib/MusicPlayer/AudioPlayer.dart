@@ -168,11 +168,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
    Future<dynamic> onCustomAction(String name, dynamic arguments) async {
-    if (name == "volume")
-      _audioPlayer.setVolume(arguments);
+    if (name == "volume"){
+      var newval = arguments * .01;
+      await _audioPlayer.setVolume(newval);
+    }
   }
 
-  //Handles moving the postion based on duration bounds
+  // Handles moving the postion based on duration bounds
   Future<void> _seekRelative(Duration offset) async {
     var newPosition = _audioPlayer.playbackEvent.position + offset;
     if (newPosition < Duration.zero) {
