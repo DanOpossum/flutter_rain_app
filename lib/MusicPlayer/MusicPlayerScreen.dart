@@ -23,7 +23,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(20.0),
+          // padding: EdgeInsets.all(0.0),
           color: Colors.white,
           child: new Column(mainAxisSize: MainAxisSize.max, children: [
             // The background audio player will communicate with the help of streams to the ui
@@ -47,7 +47,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        _soundChoices(),
+                        _soundChoices(mediaItem, playing),
                         _volumeController(),
                         _playerController(playing, mediaItem, queue),
                       ],
@@ -79,39 +79,79 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     );
   }
 
-  _soundChoices() {
+  InkWell soundButton(int i) {
+    Decoration image;
+
+    if (i == 1) {
+      image = catBox();
+    } else if (i == 2) {
+      image = activeBox();
+    } else {
+      image = blankBox();
+    }
+    var newInkwell = InkWell(
+        onTap: () async {
+          AudioService.start(
+              backgroundTaskEntrypoint: _audioTaskEntryPoint,
+              androidNotificationChannelName: 'Audio Service Demo',
+              androidNotificationColor: 0xFF2222f5,
+              androidNotificationIcon: 'mipmap/ic_launcher');
+        },
+        child: new Container(
+          width: 100.00,
+          height: 100.00,
+          decoration: image,
+        ));
+
+    return newInkwell;
+  }
+
+  BoxDecoration blankBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/square.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  BoxDecoration activeBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/test.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  BoxDecoration catBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/kitty-8-10.jpg'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  _soundChoices(MediaItem mediaItem, bool playing) {
     return Container(
       child: CustomScrollView(
         shrinkWrap: true,
         slivers: <Widget>[
           SliverGrid(
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 0.0,
+              crossAxisSpacing: 0.0,
+              // childAspectRatio: .750,
+            ),
             delegate: SliverChildListDelegate(
               [
-                IconButton(
-                  icon: Image.asset('assets/kitty-8-10.jpg'),
-                  iconSize: 50,
-                  onPressed: () async {
-                    AudioService.start(
-                        backgroundTaskEntrypoint: _audioTaskEntryPoint,
-                        androidNotificationChannelName: 'Audio Service Demo',
-                        androidNotificationColor: 0xFF2222f5,
-                        androidNotificationIcon: 'mipmap/ic_launcher');
-                  },
-                ),
-                IconButton(
-                    icon: Image.asset('assets/kitty-8-10.jpg'),
-                    iconSize: 50,
-                    onPressed: () {}),
-                IconButton(
-                    icon: Image.asset('assets/kitty-8-10.jpg'),
-                    iconSize: 50,
-                    onPressed: () {}),
-                IconButton(
-                    icon: Image.asset('assets/kitty-8-10.jpg'),
-                    iconSize: 50,
-                    onPressed: () {}),
+                mediaItem != null &&
+                        mediaItem.title == "Epic Titanic Flute" &&
+                        playing
+                    ? soundButton(2)
+                    : soundButton(1),
+                soundButton(0),
+                soundButton(0),
+                soundButton(0),
               ],
             ),
           ),

@@ -51,13 +51,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onStart(Map<String, dynamic> params) {
-
     // todo expand with explanation
     // Here we are setting up our _playerStateSubscription by getting
     // the playbackStateStream from our _audioPlayer.
     _playerStateSubscription = _audioPlayer.playbackStateStream
         .where((state) => state == AudioPlaybackState.completed)
-        .listen((state) {_handlePlaybackComplete();
+        .listen((state) {
+      _handlePlaybackComplete();
     });
 
     // Listening for state
@@ -167,8 +167,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-   Future<dynamic> onCustomAction(String name, dynamic arguments) async {
-    if (name == "volume"){
+  Future<dynamic> onCustomAction(String name, dynamic arguments) async {
+    if (name == "volume") {
       var newval = arguments * .01;
       await _audioPlayer.setVolume(newval);
     }
@@ -225,17 +225,33 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // Returns the list of mediaControls ie. The play button
   List<MediaControl> getControls() {
+    // if (_playing) {
+    //   return [
+    //     skipToPreviousControl,
+    //     pauseControl,
+    //     stopControl,
+    //     skipToNextControl,
+    //   ];
+    // } else {
+    //   return [
+    //     playControl,
+    //     pauseControl,
+    //     stopControl,
+    //     skipToNextControl,
+    //   ];
+    // }
+
     if (_playing) {
       return [
-        skipToPreviousControl,
         pauseControl,
+        skipToPreviousControl,
         stopControl,
         skipToNextControl,
       ];
     } else {
       return [
         playControl,
-        pauseControl,
+        skipToPreviousControl,
         stopControl,
         skipToNextControl,
       ];
