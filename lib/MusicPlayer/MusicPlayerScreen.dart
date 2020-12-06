@@ -4,6 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rain_app/MusicPlayer/AudioPlayer.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum ButtonEnum {
+  catbox,
+  blank,
+  rainplay,
+  rainpause,
+  airplay,
+  airpause,
+  staticplay,
+  staticpause
+}
+
 class MusicPlayerScreen extends StatefulWidget {
   @override
   _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
@@ -79,13 +90,23 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     );
   }
 
-  InkWell soundButton(int i) {
+  InkWell soundButton(ButtonEnum butt) {
     Decoration image;
 
-    if (i == 1) {
+    if (butt == ButtonEnum.catbox) {
       image = catBox();
-    } else if (i == 2) {
-      image = activeBox();
+    } else if (butt == ButtonEnum.rainplay) {
+      image = rainPlayBox();
+    } else if (butt == ButtonEnum.rainpause) {
+      image = rainPauseBox();
+    } else if (butt == ButtonEnum.airplay) {
+      image = airPlayBox();
+    } else if (butt == ButtonEnum.airpause) {
+      image = airPauseBox();
+    } else if (butt == ButtonEnum.staticplay) {
+      image = staticPlayBox();
+    } else if (butt == ButtonEnum.staticpause) {
+      image = staticPauseBox();
     } else {
       image = blankBox();
     }
@@ -130,6 +151,54 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     ));
   }
 
+  BoxDecoration rainPlayBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/rainplay.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  BoxDecoration rainPauseBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/rainpause.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  BoxDecoration airPlayBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/airplay.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  BoxDecoration airPauseBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/airpause.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
+  BoxDecoration staticPlayBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/staticplay.png'),
+      fit: BoxFit.cover,
+    ));
+  }
+
+  BoxDecoration staticPauseBox() {
+    return BoxDecoration(
+        image: new DecorationImage(
+      image: ExactAssetImage('assets/staticpause.png'),
+      fit: BoxFit.fitHeight,
+    ));
+  }
+
   _soundChoices(MediaItem mediaItem, bool playing) {
     return Container(
       child: CustomScrollView(
@@ -137,21 +206,19 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         slivers: <Widget>[
           SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+              crossAxisCount: 2,
               mainAxisSpacing: 0.0,
               crossAxisSpacing: 0.0,
               // childAspectRatio: .750,
             ),
             delegate: SliverChildListDelegate(
               [
-                mediaItem != null &&
-                        mediaItem.title == "Epic Titanic Flute" &&
-                        playing
-                    ? soundButton(2)
-                    : soundButton(1),
-                soundButton(0),
-                soundButton(0),
-                soundButton(0),
+                mediaItem != null && mediaItem.title == "Rain" && playing
+                    ? soundButton(ButtonEnum.rainpause)
+                    : soundButton(ButtonEnum.rainplay),
+                soundButton(ButtonEnum.staticplay),
+                soundButton(ButtonEnum.airplay),
+                soundButton(ButtonEnum.blank),
               ],
             ),
           ),

@@ -264,6 +264,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
 class MediaLibrary {
   final _items = <MediaItem>[
     MediaItem(
+      id: "assets/heavyrain.mp3",
+      album: "Unspecified Album",
+      title: "Rain",
+      artist: "earth",
+      duration: Duration(),
+      artUri: "assets/rainplay.png",
+    ),
+    MediaItem(
       id: "assets/titanic_flute.mp3",
       album: "Unspecified Album",
       title: "Epic Titanic Flute",
